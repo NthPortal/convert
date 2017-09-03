@@ -1,5 +1,7 @@
 package com.nthportal.convert
 
+import com.nthportal.convert.SpecializationTypes.specTypes
+
 import scala.language.higherKinds
 import scala.reflect.ClassTag
 import scala.util.control.ControlThrowable
@@ -34,9 +36,6 @@ import scala.util.control.ControlThrowable
   *                          block from this Convert instance.
   */
 sealed trait Convert {
-
-  import Convert.specTypes
-
   /** A function which takes the result type of a conversion as input,
     * and yields the return type of the conversion block.
     *
@@ -147,8 +146,6 @@ sealed trait Convert {
 }
 
 object Convert {
-  private val specTypes = new Specializable.Group((Byte, Short, Int, Long, Float, Double, Boolean))
-
   /**
     * A [[Convert]] which returns the result of a conversion as is,
     * and throws an exception if the conversion fails.
