@@ -25,6 +25,9 @@ import scala.util.control.ControlThrowable
   *     }
   *   }
   * }
+  *
+  * val res1: Boolean = parseBoolean("true")(Convert.Valid)
+  * val res2: Option[Boolean] = parseBoolean("true")(Convert.Any)
   * }}}
   *
   * @define withinConversion This method MUST be called within a conversion
@@ -34,19 +37,26 @@ sealed trait Convert {
 
   import Convert.specTypes
 
+  /** A function which takes the result type of a conversion as input,
+    * and yields the return type of the conversion block.
+    *
+    * For example, if converting a String to a Boolean, this is a function
+    * which takes `Boolean` as input, and yields some type `Result[Boolean]`
+    * (`Boolean` for Convert.Valid, and `Option[Boolean]` for Convert.Any).
+    */
   type Result[T]
 
   /** Performs a conversion.
     *
     * Conversion operations MUST take place within this block
-    * (a `conversion` block).
+    * (a 'conversion block').
     *
     * @example
-    * {{{*
+    * {{{
     * conversion {
-    *   // Do conversion here
-    *   // - fail if something goes wrong
-    *   // - return a result
+    *   val res = ??? // do conversion
+    *   if (cond) fail(new IllegalArgumentException("invalid input")) // fail if something goes wrong
+    *   res // return a result
     * }
     * }}}
     *
@@ -61,7 +71,6 @@ sealed trait Convert {
     * $withinConversion
     *
     * @param ex an exception to throw, if this Convert throws exceptions
-    * @return
     */
   def fail(ex: => Exception): Nothing
 
@@ -149,8 +158,22 @@ object Convert {
 
     override def conversion[@specialized(specTypes) T](res: => T): T = res
 
+    /** Throws the specified exception.
+      *
+      * $withinConversion
+      *
+      * @param ex the exception to throw
+      */
     override def fail(ex: => Exception): Nothing = throw ex
 
+    /** Returns the result of another conversion.
+      *
+      * $withinConversion
+      *
+      * @param result the result of another conversion
+      * @tparam T the type of the result
+      * @return the result of the other conversion
+      */
     override def unwrap[@specialized(specTypes) T](result: T): T = result
   }
 
@@ -170,8 +193,25 @@ object Convert {
       }
     }
 
+    /** Terminates the enclosing conversion block with [[scala.None None]].
+      *
+      * $withinConversion
+      *
+      * @param ex ignored
+      */
     override def fail(ex: => Exception): Nothing = throw FailControl
 
+    /** Unwraps the result of another conversion (an [[scala.Option Option]]).
+      *
+      * If the result was [[scala.None None]], this terminates the enclosing
+      * conversion block with None; otherwise, it returns the value of the Option.
+      *
+      * $withinConversion
+      *
+      * @param result the result of another conversion
+      * @tparam T the type of the `Option[T]`
+      * @return the result of the other conversion, not wrapped in an Option
+      */
     override def unwrap[@specialized(specTypes) T](result: Option[T]): T = result match {
       case Some(t) => t
       case None => throw FailControl
