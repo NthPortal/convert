@@ -3,7 +3,7 @@ name := "convert"
 description := "A Scala library for handling conversions between types by throwing exceptions or returning Options " +
   "containing the results."
 
-val rawVersion = "0.1.1"
+val rawVersion = "0.2.0"
 isSnapshot := false
 version := rawVersion + { if (isSnapshot.value) "-SNAPSHOT" else "" }
 
