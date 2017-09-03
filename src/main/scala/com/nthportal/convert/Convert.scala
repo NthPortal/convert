@@ -4,7 +4,7 @@ import com.nthportal.convert.SpecializationTypes.specTypes
 
 import scala.language.higherKinds
 import scala.reflect.ClassTag
-import scala.util.control.ControlThrowable
+import scala.util.control.{ControlThrowable, NonFatal}
 
 /** An object for handling a conversion between two types.
   *
@@ -140,7 +140,7 @@ sealed trait Convert {
     try {
       body
     } catch {
-      case e: Exception if matches(e) => fail(e)
+      case NonFatal(e: Exception) if matches(e) => fail(e)
     }
   }
 }
