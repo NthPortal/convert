@@ -146,6 +146,21 @@ sealed trait Convert {
 }
 
 object Convert {
+  /** Type member alias for [[Convert]]. */
+  type Aux[R[X]] = Convert { type Result[T] = R[T] }
+
+  /** Utility object containing type aliases/functions. */
+  object Type {
+    /** Identity type function. */
+    type Id[T] = T
+
+    /** Type alias for the type of [[Convert.Valid]]. */
+    type Valid = Aux[Id]
+
+    /** Type alias for the type of [[Convert.Any]]. */
+    type Any = Aux[Option]
+  }
+
   /**
     * A [[Convert]] which returns the result of a conversion as is,
     * and throws an exception if the conversion fails.
