@@ -22,6 +22,8 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.1+" % Test
 )
 
+autoAPIMappings := true
+
 scalacOptions ++= {
   if (isSnapshot.value) Seq()
   else scalaVersion.value split '.' map { _.toInt } match {

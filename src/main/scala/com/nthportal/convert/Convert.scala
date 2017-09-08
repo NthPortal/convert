@@ -84,8 +84,8 @@ sealed trait Convert {
   def unwrap[@specialized(specTypes) T](result: Result[T]): T
 
   /** Tests an expression, failing the conversion if false. Analogous to
-    * [[scala.Predef.require(boolean):Unit Predef.require]], except that
-    * it fails the conversion instead of always throwing an exception.
+    * [[scala.Predef.require(requirement:<?>):Unit* Predef.require]], except
+    * that it fails the conversion instead of always throwing an exception.
     *
     * $withinConversion
     *
@@ -97,8 +97,8 @@ sealed trait Convert {
   }
 
   /** Tests an expression, failing the conversion if false. Analogous to
-    * [[scala.Predef.require(boolean,=>Any):Unit Predef.require]], except
-    * that it fails the conversion instead of always throwing an exception.
+    * [[scala.Predef.require(requirement:<?>,message:<?>):Unit* Predef.require]],
+    * except that it fails the conversion instead of always throwing an exception.
     *
     * $withinConversion
     *
