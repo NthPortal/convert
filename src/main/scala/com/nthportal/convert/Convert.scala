@@ -2,7 +2,7 @@ package com.nthportal.convert
 
 import com.nthportal.convert.SpecializationTypes.specTypes
 
-import scala.language.higherKinds
+import scala.language.{higherKinds, implicitConversions}
 import scala.reflect.ClassTag
 import scala.util.control.{ControlThrowable, NonFatal}
 
@@ -31,11 +31,12 @@ import scala.util.control.{ControlThrowable, NonFatal}
   * val res1: Boolean = parseBoolean("true")(Convert.Valid)
   * val res2: Option[Boolean] = parseBoolean("true")(Convert.Any)
   * }}}
-  *
   * @define withinConversion This method MUST be called within a conversion
   *                          block from this Convert instance.
   */
 sealed trait Convert {
+  self =>
+
   /** A function which takes the result type of a conversion as input,
     * and yields the return type of the conversion block.
     *
@@ -84,8 +85,8 @@ sealed trait Convert {
   def unwrap[@specialized(specTypes) T](result: Result[T]): T
 
   /** Tests an expression, failing the conversion if false. Analogous to
-    * [[scala.Predef.require(boolean):Unit Predef.require]], except that
-    * it fails the conversion instead of always throwing an exception.
+    * [[scala.Predef.require(requirement:<?>):Unit* Predef.require]], except
+    * that it fails the conversion instead of always throwing an exception.
     *
     * $withinConversion
     *
@@ -97,8 +98,8 @@ sealed trait Convert {
   }
 
   /** Tests an expression, failing the conversion if false. Analogous to
-    * [[scala.Predef.require(boolean,=>Any):Unit Predef.require]], except
-    * that it fails the conversion instead of always throwing an exception.
+    * [[scala.Predef.require(requirement:<?>,message:<?>):Unit* Predef.require]],
+    * except that it fails the conversion instead of always throwing an exception.
     *
     * $withinConversion
     *
@@ -143,6 +144,42 @@ sealed trait Convert {
       case NonFatal(e: Exception) if matches(e) => fail(e)
     }
   }
+
+  /** An object containing an implicit conversion from `Result[T]` to `T`.
+    * The implicit conversion allows the automatic unwrapping of
+    * [[Result Results]], without explicitly calling [[unwrap]].
+    *
+    * '''USE THIS IMPLICIT CONVERSION AT YOUR OWN RISK'''
+    *
+    * This implicit conversion can improve code readability; however, it
+    * should be used with care. As with all implicit conversions, it may
+    * be difficult to tell when it is applied by the compiler, leading to
+    * unexpected behavior which is difficult to debug.
+    *
+    * Additionally, because [[unwrap]] MUST be called within a conversion block,
+    * this implicit conversion MUST be called within a conversion block as well.
+    * However, if imported in the wrong scope, the compiler may insert a call
+    * to this implicit conversion ''outside'' of any conversion block. Use this
+    * implicit conversion with care.
+    */
+  object AutoUnwrap {
+    /** Automatically unwraps the [[Result]] of another conversion.
+      *
+      * $withinConversion
+      *
+      * @param result the result of another conversion
+      * @tparam T the type of the `Result[T]`
+      * @return the result of the other conversion, not wrapped as a `Result`
+      */
+    implicit def autoUnwrap[T](result: Result[T]): T = unwrap(result)
+  }
+
+  /** A wrapper object for an implicit reference to the enclosing [[Convert]]. */
+  object Implicit {
+    /** Import to bring the enclosing [[Convert]] into scope as an implicit. */
+    implicit val ref: self.type = self
+  }
+
 }
 
 object Convert {
@@ -166,6 +203,8 @@ object Convert {
     * and throws an exception if the conversion fails.
     */
   object Valid extends Convert {
+    self: Type.Valid =>
+
     override type Result[T] = T
 
     override def conversion[@specialized(specTypes) T](res: => T): T = res
@@ -195,6 +234,8 @@ object Convert {
     * the conversion fails.
     */
   object Any extends Convert {
+    self: Type.Any =>
+
     override type Result[T] = Option[T]
 
     override def conversion[@specialized(specTypes) T](res: => T): Option[T] = {
