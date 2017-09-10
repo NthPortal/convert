@@ -8,10 +8,6 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
 
   behavior of "Convert.Valid"
 
-  it should "have the correct type" in {
-    "val c: Convert.Type.Valid = Convert.Valid" should compile
-  }
-
   it should "fail" in {
     val c = Convert.Valid
 
@@ -33,7 +29,8 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "unwrap results" in {
-    implicit val c = Convert.Valid
+    val c = Convert.Valid
+    import c.Implicit.ref
 
     c.conversion {
       val res = c.unwrap(parseInt("1"))
@@ -58,10 +55,6 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
 
   behavior of "Convert.Any"
 
-  it should "have the correct type" in {
-    "val c: Convert.Type.Any = Convert.Any" should compile
-  }
-
   it should "fail" in {
     val c = Convert.Any
 
@@ -80,7 +73,8 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "unwrap results" in {
-    implicit val c = Convert.Any
+    val c = Convert.Any
+    import c.Implicit.ref
 
     c.conversion {
       val res = c.unwrap(parseInt("1"))

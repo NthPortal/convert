@@ -31,11 +31,12 @@ import scala.util.control.{ControlThrowable, NonFatal}
   * val res1: Boolean = parseBoolean("true")(Convert.Valid)
   * val res2: Option[Boolean] = parseBoolean("true")(Convert.Any)
   * }}}
-  *
   * @define withinConversion This method MUST be called within a conversion
   *                          block from this Convert instance.
   */
 sealed trait Convert {
+  self =>
+
   /** A function which takes the result type of a conversion as input,
     * and yields the return type of the conversion block.
     *
@@ -172,6 +173,13 @@ sealed trait Convert {
       */
     implicit def autoUnwrap[T](result: Result[T]): T = unwrap(result)
   }
+
+  /** A wrapper object for an implicit reference to the enclosing [[Convert]]. */
+  object Implicit {
+    /** Import to bring the enclosing [[Convert]] into scope as an implicit. */
+    implicit val ref: self.type = self
+  }
+
 }
 
 object Convert {
@@ -195,6 +203,8 @@ object Convert {
     * and throws an exception if the conversion fails.
     */
   object Valid extends Convert {
+    self: Type.Valid =>
+
     override type Result[T] = T
 
     override def conversion[@specialized(specTypes) T](res: => T): T = res
@@ -224,6 +234,8 @@ object Convert {
     * the conversion fails.
     */
   object Any extends Convert {
+    self: Type.Any =>
+
     override type Result[T] = Option[T]
 
     override def conversion[@specialized(specTypes) T](res: => T): Option[T] = {
