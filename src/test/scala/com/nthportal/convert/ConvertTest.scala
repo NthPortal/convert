@@ -32,14 +32,10 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
     val c = Convert.Valid
     import c.Implicit.ref
 
-    c.conversion {
-      val res = c.unwrap(parseInt("1"))
-      res * 2
-    } shouldBe 2
+    c.conversion { c.unwrap(parseInt("1")) * 2 } shouldBe 2
 
     a[NumberFormatException] should be thrownBy c.conversion {
-      val res = c.unwrap(parseInt("not a number"))
-      res * 2
+      c.unwrap(parseInt("not a number")) * 2
     }
   }
 
@@ -90,15 +86,9 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
     val c = Convert.Any
     import c.Implicit.ref
 
-    c.conversion {
-      val res = c.unwrap(parseInt("1"))
-      res * 2
-    }.value shouldBe 2
+    c.conversion { c.unwrap(parseInt("1")) * 2 }.value shouldBe 2
 
-    c.conversion {
-      val res = c.unwrap(parseInt("not a number"))
-      res * 2
-    } shouldBe empty
+    c.conversion { c.unwrap(parseInt("not a number")) * 2 } shouldBe empty
   }
 
   it should "auto-unwrap results" in {
