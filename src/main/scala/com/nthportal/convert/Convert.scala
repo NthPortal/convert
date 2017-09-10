@@ -2,7 +2,7 @@ package com.nthportal.convert
 
 import com.nthportal.convert.SpecializationTypes.specTypes
 
-import scala.language.higherKinds
+import scala.language.{higherKinds, implicitConversions}
 import scala.reflect.ClassTag
 import scala.util.control.{ControlThrowable, NonFatal}
 
@@ -142,6 +142,35 @@ sealed trait Convert {
     } catch {
       case NonFatal(e: Exception) if matches(e) => fail(e)
     }
+  }
+
+  /** An object containing an implicit conversion from `Result[T]` to `T`.
+    * The implicit conversion allows the automatic unwrapping of
+    * [[Result Results]], without explicitly calling [[unwrap]].
+    *
+    * '''USE THIS IMPLICIT CONVERSION AT YOUR OWN RISK'''
+    *
+    * This implicit conversion can improve code readability; however, it
+    * should be used with care. As with all implicit conversions, it may
+    * be difficult to tell when it is applied by the compiler, leading to
+    * unexpected behavior which is difficult to debug.
+    *
+    * Additionally, because [[unwrap]] MUST be called within a conversion block,
+    * this implicit conversion MUST be called within a conversion block as well.
+    * However, if imported in the wrong scope, the compiler may insert a call
+    * to this implicit conversion ''outside'' of any conversion block. Use this
+    * implicit conversion with care.
+    */
+  object AutoUnwrap {
+    /** Automatically unwraps the [[Result]] of another conversion.
+      *
+      * $withinConversion
+      *
+      * @param result the result of another conversion
+      * @tparam T the type of the `Result[T]`
+      * @return the result of the other conversion, not wrapped as a `Result`
+      */
+    implicit def autoUnwrap[T](result: Result[T]): T = unwrap(result)
   }
 }
 
