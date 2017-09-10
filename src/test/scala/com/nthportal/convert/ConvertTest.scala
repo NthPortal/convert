@@ -8,10 +8,6 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
 
   behavior of "Convert.Valid"
 
-  it should "have the correct type" in {
-    "val c: Convert.Type.Valid = Convert.Valid" should compile
-  }
-
   it should "fail" in {
     val c = Convert.Valid
 
@@ -33,16 +29,27 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "unwrap results" in {
+    val c = Convert.Valid
+    import c.Implicit.ref
+
+    c.conversion { c.unwrap(parseInt("1")) * 2 } shouldBe 2
+
+    a[NumberFormatException] should be thrownBy c.conversion {
+      c.unwrap(parseInt("not a number")) * 2
+    }
+  }
+
+  it should "auto-unwrap results" in {
     implicit val c = Convert.Valid
 
     c.conversion {
-      val res = c.unwrap(parseInt("1"))
-      res * 2
+      import c.AutoUnwrap.autoUnwrap
+      parseInt("1") * 2
     } shouldBe 2
 
     a[NumberFormatException] should be thrownBy c.conversion {
-      val res = c.unwrap(parseInt("not a number"))
-      res * 2
+      import c.AutoUnwrap.autoUnwrap
+      parseInt("not a number") * 2
     }
   }
 
@@ -57,10 +64,6 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   behavior of "Convert.Any"
-
-  it should "have the correct type" in {
-    "val c: Convert.Type.Any = Convert.Any" should compile
-  }
 
   it should "fail" in {
     val c = Convert.Any
@@ -80,16 +83,25 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "unwrap results" in {
+    val c = Convert.Any
+    import c.Implicit.ref
+
+    c.conversion { c.unwrap(parseInt("1")) * 2 }.value shouldBe 2
+
+    c.conversion { c.unwrap(parseInt("not a number")) * 2 } shouldBe empty
+  }
+
+  it should "auto-unwrap results" in {
     implicit val c = Convert.Any
 
     c.conversion {
-      val res = c.unwrap(parseInt("1"))
-      res * 2
+      import c.AutoUnwrap.autoUnwrap
+      parseInt("1") * 2
     }.value shouldBe 2
 
     c.conversion {
-      val res = c.unwrap(parseInt("not a number"))
-      res * 2
+      import c.AutoUnwrap.autoUnwrap
+      parseInt("not a number") * 2
     } shouldBe empty
   }
 

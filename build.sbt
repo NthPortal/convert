@@ -3,7 +3,7 @@ name := "convert"
 description := "A Scala library for handling conversions between types by throwing exceptions or returning Options " +
   "containing the results."
 
-val rawVersion = "0.2.0"
+val rawVersion = "0.3.0"
 isSnapshot := false
 version := rawVersion + { if (isSnapshot.value) "-SNAPSHOT" else "" }
 
@@ -21,6 +21,8 @@ crossScalaVersions := Seq(
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.1+" % Test
 )
+
+autoAPIMappings := true
 
 scalacOptions ++= {
   if (isSnapshot.value) Seq()
