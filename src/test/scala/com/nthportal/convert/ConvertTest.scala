@@ -29,8 +29,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "unwrap results" in {
-    val c = Convert.Valid
-    import c.Implicit.ref
+    implicit val c = Convert.Valid
 
     c.conversion { c.unwrap(parseInt("1")) * 2 } shouldBe 2
 
@@ -83,8 +82,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "unwrap results" in {
-    val c = Convert.Any
-    import c.Implicit.ref
+    implicit val c = Convert.Any
 
     c.conversion { c.unwrap(parseInt("1")) * 2 }.value shouldBe 2
 
@@ -133,6 +131,28 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
     }.value shouldBe true
     initialized shouldBe true
   }
+
+  behavior of "Convert companion object"
+
+  it should "synthesize Conversions" in {
+    val parseBoolean = Convert.synthesize(parseBooleanThrowing, parseBooleanAsOption)
+
+    locally {
+      import Convert.Valid.Implicit.ref
+
+      parseBoolean("true") shouldBe true
+      parseBoolean("false") shouldBe false
+      an[IllegalArgumentException] should be thrownBy { parseBoolean("not a boolean") }
+    }
+
+    locally {
+      import Convert.Any.Implicit.ref
+
+      parseBoolean("true").value shouldBe true
+      parseBoolean("false").value shouldBe false
+      parseBoolean("not a boolean") shouldBe empty
+    }
+  }
 }
 
 object ConvertTest {
@@ -147,4 +167,19 @@ object ConvertTest {
     }
   }
 
+  def parseBooleanThrowing(s: String): Boolean = {
+    s.toLowerCase match {
+      case "true" => true
+      case "false" => false
+      case _ => throw new IllegalArgumentException
+    }
+  }
+
+  def parseBooleanAsOption(s: String): Option[Boolean] = {
+    s.toLowerCase match {
+      case "true" => Some(true)
+      case "false" => Some(false)
+      case _ => None
+    }
+  }
 }

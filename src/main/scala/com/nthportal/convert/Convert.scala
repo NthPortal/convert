@@ -183,6 +183,41 @@ sealed trait Convert {
 }
 
 object Convert {
+  /** Synthesizes a [[Conversion]] from two conversion functions: one which throws
+    * exceptions on failure, and one which returns an [[scala.Option Option]].
+    *
+    * @param throwing a conversion function which throws exceptions on failure
+    * @param option   a conversion function which returns an Option
+    * @tparam T the input type of the conversion
+    * @tparam R the output type of the conversion
+    */
+  def synthesize[T, R](throwing: T => R, option: T => Option[R]): Conversion[T, R] = {
+    new Conversion[T, R] {
+      override def apply(t: T)(implicit c: Convert): c.Result[R] = c match {
+        case Valid => throwing(t).asInstanceOf[c.Result[R]]
+        case Any => option(t).asInstanceOf[c.Result[R]]
+      }
+    }
+  }
+
+  /** A conversion from `T` to `R`.
+    *
+    * Alternatively, a function `T => R` where there is an implicit
+    * `Convert` in scope.
+    *
+    * @tparam T the input type of the conversion
+    * @tparam R the output type of the conversion
+    */
+  trait Conversion[-T, R] {
+    /** Converts `t` to an `R`.
+      *
+      * @param t the thing to convert
+      * @param c the `Convert` to use
+      * @return `t` as an `R`
+      */
+    def apply(t: T)(implicit c: Convert): c.Result[R]
+  }
+
   /** Type member alias for [[Convert]]. */
   type Aux[R[X]] = Convert { type Result[T] = R[T] }
 
