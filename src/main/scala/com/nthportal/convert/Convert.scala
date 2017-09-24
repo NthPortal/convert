@@ -44,7 +44,7 @@ sealed trait Convert {
     * which takes `Boolean` as input, and yields some type `Result[Boolean]`
     * (`Boolean` for Convert.Valid, and `Option[Boolean]` for Convert.Any).
     */
-  type Result[T]
+  type Result[+T]
 
   /** Performs a conversion.
     *
@@ -208,7 +208,7 @@ object Convert {
     * @tparam T the input type of the conversion
     * @tparam R the output type of the conversion
     */
-  trait Conversion[-T, R] {
+  trait Conversion[-T, +R] {
     /** Converts `t` to an `R`.
       *
       * @param t the thing to convert
@@ -240,7 +240,7 @@ object Convert {
   object Valid extends Convert {
     self: Type.Valid =>
 
-    override type Result[T] = T
+    override type Result[+T] = T
 
     override def conversion[@specialized(specTypes) T](res: => T): T = res
 
@@ -271,7 +271,7 @@ object Convert {
   object Any extends Convert {
     self: Type.Any =>
 
-    override type Result[T] = Option[T]
+    override type Result[+T] = Option[T]
 
     override def conversion[@specialized(specTypes) T](res: => T): Option[T] = {
       try {
