@@ -12,6 +12,6 @@ cache:
   directories:
     - $HOME/.ivy2/cache
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION coverage convertJVM/test convertJS/test
 after_success:
-  - sbt ++$TRAVIS_SCALA_VERSION coverageReport coveralls codacyCoverage
+  - sbt ++$TRAVIS_SCALA_VERSION convertJVM/coverageReport convertJS/coverageReport coverageAggregate coveralls
