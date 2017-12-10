@@ -6,16 +6,16 @@ import org.scalatest.{FlatSpec, Matchers, OptionValues}
 class ConvertTest extends FlatSpec with Matchers with OptionValues {
 
 
-  behavior of "Convert.Valid"
+  behavior of "Convert.Throwing"
 
   it should "fail" in {
-    val c = Convert.Valid
+    val c = Convert.Throwing
 
     an[IllegalStateException] should be thrownBy c.conversion { c.fail(new IllegalStateException()) }
   }
 
   it should "wrap exceptions" in {
-    val c = Convert.Valid
+    val c = Convert.Throwing
 
     c.conversion { c.wrapException[NumberFormatException, Int] { "2".toInt } } shouldBe 2
 
@@ -29,7 +29,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "unwrap results" in {
-    implicit val c = Convert.Valid
+    implicit val c = Convert.Throwing
 
     c.conversion { c.unwrap(parseInt("1")) * 2 } shouldBe 2
 
@@ -39,7 +39,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "auto-unwrap results" in {
-    implicit val c = Convert.Valid
+    implicit val c = Convert.Throwing
 
     c.conversion {
       import c.AutoUnwrap.autoUnwrap
@@ -53,7 +53,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "require something" in {
-    val c = Convert.Valid
+    val c = Convert.Throwing
 
     an[IllegalArgumentException] should be thrownBy c.conversion { c.require(impossibleRequirement) }
     an[IllegalArgumentException] should be thrownBy c.conversion { c.require(impossibleRequirement, "message") }
@@ -62,16 +62,16 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
     noException should be thrownBy c.conversion { c.require(fulfilledRequirement, "message") }
   }
 
-  behavior of "Convert.Any"
+  behavior of "Convert.AsOption"
 
   it should "fail" in {
-    val c = Convert.Any
+    val c = Convert.AsOption
 
     c.conversion { c.fail(new IllegalStateException()) } shouldBe empty
   }
 
   it should "wrap exceptions" in {
-    val c = Convert.Any
+    val c = Convert.AsOption
 
     c.conversion { c.wrapException[NumberFormatException, Int] { "2".toInt } }.value shouldBe 2
     c.conversion { c.wrapException[NumberFormatException, Int] { "not a number".toInt } } shouldBe empty
@@ -82,7 +82,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "unwrap results" in {
-    implicit val c = Convert.Any
+    implicit val c = Convert.AsOption
 
     c.conversion { c.unwrap(parseInt("1")) * 2 }.value shouldBe 2
 
@@ -90,7 +90,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "auto-unwrap results" in {
-    implicit val c = Convert.Any
+    implicit val c = Convert.AsOption
 
     c.conversion {
       import c.AutoUnwrap.autoUnwrap
@@ -104,7 +104,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   }
 
   it should "require something" in {
-    val c = Convert.Any
+    val c = Convert.AsOption
 
     c.conversion {
       c.require(impossibleRequirement)
@@ -138,7 +138,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
     val parseBoolean = Convert.synthesize(parseBooleanThrowing, parseBooleanAsOption)
 
     locally {
-      import Convert.Valid.Implicit.ref
+      import Convert.Throwing.Implicit.ref
 
       parseBoolean("true") shouldBe true
       parseBoolean("false") shouldBe false
@@ -146,7 +146,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
     }
 
     locally {
-      import Convert.Any.Implicit.ref
+      import Convert.AsOption.Implicit.ref
 
       parseBoolean("true").value shouldBe true
       parseBoolean("false").value shouldBe false

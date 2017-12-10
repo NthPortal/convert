@@ -8,10 +8,10 @@ import scala.util.control.{ControlThrowable, NonFatal}
 
 /** An object for handling a conversion between two types.
   *
-  * [[Convert.Valid]] returns the result of a conversion as is,
+  * [[Convert.Throwing]] returns the result of a conversion as is,
   * and throws an exception if the conversion fails.
   *
-  * [[Convert.Any]] returns the result of a conversion wrapped in
+  * [[Convert.AsOption]] returns the result of a conversion wrapped in
   * an [[scala.Option Option]], and returns [[scala.None None]] if
   * the conversion fails.
   *
@@ -187,15 +187,15 @@ object Convert {
     * exceptions on failure, and one which returns an [[scala.Option Option]].
     *
     * @param throwing a conversion function which throws exceptions on failure
-    * @param option   a conversion function which returns an Option
+    * @param asOption a conversion function which returns an Option
     * @tparam T the input type of the conversion
     * @tparam R the output type of the conversion
     */
-  def synthesize[T, R](throwing: T => R, option: T => Option[R]): Conversion[T, R] = {
+  def synthesize[T, R](throwing: T => R, asOption: T => Option[R]): Conversion[T, R] = {
     new Conversion[T, R] {
       override def apply(t: T)(implicit c: Convert): c.Result[R] = c match {
-        case Valid => throwing(t).asInstanceOf[c.Result[R]]
-        case Any => option(t).asInstanceOf[c.Result[R]]
+        case Throwing => throwing(t).asInstanceOf[c.Result[R]]
+        case AsOption => asOption(t).asInstanceOf[c.Result[R]]
       }
     }
   }
@@ -226,19 +226,19 @@ object Convert {
     /** Identity type function. */
     type Id[T] = T
 
-    /** Type alias for the type of [[Convert.Valid]]. */
-    type Valid = Aux[Id]
+    /** Type alias for the type of [[Convert.Throwing]]. */
+    type Throwing = Aux[Id]
 
-    /** Type alias for the type of [[Convert.Any]]. */
-    type Any = Aux[Option]
+    /** Type alias for the type of [[Convert.AsOption]]. */
+    type AsOption = Aux[Option]
   }
 
   /**
     * A [[Convert]] which returns the result of a conversion as is,
     * and throws an exception if the conversion fails.
     */
-  object Valid extends Convert {
-    self: Type.Valid =>
+  object Throwing extends Convert {
+    self: Type.Throwing =>
 
     override type Result[+T] = T
 
@@ -268,8 +268,8 @@ object Convert {
     * an [[scala.Option Option]], and returns [[scala.None None]] if
     * the conversion fails.
     */
-  object Any extends Convert {
-    self: Type.Any =>
+  object AsOption extends Convert {
+    self: Type.AsOption =>
 
     override type Result[+T] = Option[T]
 
