@@ -3,7 +3,7 @@ import sbtcrossproject.{crossProject, CrossType}
 scalaVersion := "2.12.4"
 crossScalaVersions := Seq("2.11.12", "2.12.4")
 
-val rawVersion = "0.4.0"
+val rawVersion = "0.5.0"
 val sharedSettings = Seq(
   organization := "com.nthportal",
   name := "convert",
