@@ -28,8 +28,8 @@ import scala.util.control.{ControlThrowable, NonFatal}
   *   }
   * }
   *
-  * val res1: Boolean = parseBoolean("true")(Convert.Valid)
-  * val res2: Option[Boolean] = parseBoolean("true")(Convert.Any)
+  * val res1: Boolean = parseBoolean("true")(Convert.Throwing)
+  * val res2: Option[Boolean] = parseBoolean("true")(Convert.AsOption)
   * }}}
   * @define withinConversion This method MUST be called within a conversion
   *                          block from this Convert instance.
@@ -42,7 +42,8 @@ sealed trait Convert {
     *
     * For example, if converting a String to a Boolean, this is a function
     * which takes `Boolean` as input, and yields some type `Result[Boolean]`
-    * (`Boolean` for Convert.Valid, and `Option[Boolean]` for Convert.Any).
+    * (`Boolean` for Convert.Throwing, and `Option[Boolean]` for
+    * Convert.AsOption).
     */
   type Result[+T]
 
