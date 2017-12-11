@@ -38,9 +38,7 @@ A Scala library for handling conversions between types by throwing exceptions or
 </dependency>
 ```
 
-## Usage
-
-### As a Client
+## Usage: As a Client
 
 Suppose you wish to convert the a `String` to a `BigDecimal` using the following
 method:
@@ -88,9 +86,9 @@ import com.nthportal.convert.Convert.AsOption.Implicit.ref
 val e: Option[BigDecimal] = parseBigDecimal("2.718281828")
 ```
 
-### In a Library
+## Usage: In a Library
 
-#### Basics
+### Basics
 
 The core methods of `Convert` are `conversion` and `fail`. Additionally, `unwrap`
 is essential when chaining multiple conversions together.
@@ -178,9 +176,9 @@ def parseBooleanPair(s: String)(implicit c: Convert): c.Result[(Boolean, Boolean
 Now you know how to write a conversion, and how to chain multiple conversions
 together!
 
-#### Utility Methods
+### Utility Methods
 
-##### `require`
+#### `require`
 
 A common method used when parsing is `require` (defined in `Predef`).
 Unfortunately, `Predef.require` always throws an exception when it fails, which
@@ -203,7 +201,7 @@ def list2Tuple[A](list: List[A])(implicit c: Convert): c.Result[(A, A)] = {
 }
 ```
 
-##### `wrapException`
+#### `wrapException`
 
 Sometimes you may wish to use a conversion function which always throws
 exceptions, because you either cannot or do not want to re-implement it. For
@@ -227,7 +225,7 @@ def parseInt2(s: String)(implicit c: Convert): c.Result[Int] = {
 }
 ```
 
-#### Synthesizing Conversions
+### Synthesizing Conversions
 
 Two functions, one of which throws exceptions, and one of which returns
 `Option`s, can be synthesized into a single conversion function using
@@ -248,7 +246,7 @@ val booleanParser: Convert.Conversion[String, Boolean] =
   Convert.synthesize(parseBooleanThrowing, parseBooleanAsOption)
 ```
 
-#### Automatic Unwrapping (USE WITH CARE)
+### Automatic Unwrapping (USE WITH CARE)
 
 Sometimes, an excess of calls to `Convert.unwrap` can reduce code readability.
 Readability can be improved by importing `Convert.AutoUnwrap.autoUnwrap` - an
