@@ -119,7 +119,7 @@ sealed trait Convert {
     * $withinConversion
     *
     * @param body the block of code which may throw an exception
-    * @tparam E the type of the exception
+    * @tparam E the type of exceptions that should be wrapped
     * @tparam T the type of the result of `body`
     * @return the result of `body`, if it did not fail
     */
@@ -133,7 +133,7 @@ sealed trait Convert {
     *
     * $withinConversion
     *
-    * @param matches a predicate to match certain exceptions to be wrapped
+    * @param matches a predicate to match exceptions that should be wrapped
     * @param body    the block of code which may throw an exception
     * @tparam T the type of the result of `body`
     * @return the result of `body`, if it did not fail
