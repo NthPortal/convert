@@ -56,8 +56,6 @@ represent a valid `BigDecimal`, invoke the method as follows (using
 `"2.718281828"` as an example string):
 
 ```scala
-import com.nthportal.convert.Convert
-
 val e: BigDecimal = parseBigDecimal("2.718281828")(Convert.Throwing)
 ```
 
@@ -66,9 +64,24 @@ the string represents a valid `BigDecimal`, and `None` otherwise, invoke the
 method as follows (again, using `"2.718281828"` as an example string):
 
 ```scala
-import com.nthportal.convert.Convert
-
 val e: Option[BigDecimal] = parseBigDecimal("2.718281828")(Convert.AsOption)
 ```
 
+Alternatively, the `Convert` with the desired behaviour can be imported as
+an implicit, as in the following two examples:
+
+```scala
+import com.nthportal.convert.Convert.Throwing.Implicit.ref
+
+val e: BigDecimal = parseBigDecimal("2.718281828")
+```
+
+```scala
+import com.nthportal.convert.Convert.AsOption.Implicit.ref
+
+val e: Option[BigDecimal] = parseBigDecimal("2.718281828")
+```
+
 ### In a Library
+
+#### Basics
