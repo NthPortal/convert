@@ -37,3 +37,38 @@ A Scala library for handling conversions between types by throwing exceptions or
   <version>0.4.0</version>
 </dependency>
 ```
+
+## Usage
+
+### As a Client
+
+Suppose you wish to convert the a `String` to a `BigDecimal` using the following
+method:
+
+```scala
+import com.nthportal.convert.Convert
+
+def parseBigDecimal(s: String)(c: Convert): c.Result[BigDecimal] = ???
+```
+
+If you would like the method to throw an exception if the string does not
+represent a valid `BigDecimal`, invoke the method as follows (using
+`"2.718281828"` as an example string):
+
+```scala
+import com.nthportal.convert.Convert
+
+val e: BigDecimal = parseBigDecimal("2.718281828")(Convert.Throwing)
+```
+
+If you would like the method to return an `Option` containing the result if
+the string represents a valid `BigDecimal`, and `None` otherwise, invoke the
+method as follows (again, using `"2.718281828"` as an example string):
+
+```scala
+import com.nthportal.convert.Convert
+
+val e: Option[BigDecimal] = parseBigDecimal("2.718281828")(Convert.AsOption)
+```
+
+### In a Library
