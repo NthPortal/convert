@@ -13,7 +13,7 @@ A Scala library for handling conversions between types by throwing exceptions or
 ### SBT (Scala 2.11 and 2.12)
 
 ```sbtshell
-"com.nthportal" %% "convert" % "0.4.0"
+"com.nthportal" %% "convert" % "0.5.0"
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ A Scala library for handling conversions between types by throwing exceptions or
 <dependency>
   <groupId>com.nthportal</groupId>
   <artifactId>convert_2.12</artifactId>
-  <version>0.4.0</version>
+  <version>0.5.0</version>
 </dependency>
 ```
 
@@ -34,7 +34,7 @@ A Scala library for handling conversions between types by throwing exceptions or
 <dependency>
   <groupId>com.nthportal</groupId>
   <artifactId>convert_2.11</artifactId>
-  <version>0.4.0</version>
+  <version>0.5.0</version>
 </dependency>
 ```
 
