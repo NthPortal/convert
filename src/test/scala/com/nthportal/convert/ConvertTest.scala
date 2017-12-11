@@ -4,14 +4,12 @@ import com.nthportal.convert.ConvertTest._
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 
 class ConvertTest extends FlatSpec with Matchers with OptionValues {
-
-
   behavior of "Convert.Throwing"
 
   it should "fail" in {
     val c = Convert.Throwing
 
-    an[IllegalStateException] should be thrownBy c.conversion { c.fail(new IllegalStateException()) }
+    an[IllegalStateException] should be thrownBy c.conversion { c fail new IllegalStateException }
   }
 
   it should "wrap exceptions" in {
@@ -31,10 +29,10 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   it should "unwrap results" in {
     implicit val c = Convert.Throwing
 
-    c.conversion { c.unwrap(parseInt("1")) * 2 } shouldBe 2
+    c.conversion { (c unwrap parseInt("1")) * 2 } shouldBe 2
 
     a[NumberFormatException] should be thrownBy c.conversion {
-      c.unwrap(parseInt("not a number")) * 2
+      (c unwrap parseInt("not a number")) * 2
     }
   }
 
@@ -67,7 +65,7 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   it should "fail" in {
     val c = Convert.AsOption
 
-    c.conversion { c.fail(new IllegalStateException()) } shouldBe empty
+    c.conversion { c fail new IllegalStateException() } shouldBe empty
   }
 
   it should "wrap exceptions" in {
@@ -84,9 +82,9 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
   it should "unwrap results" in {
     implicit val c = Convert.AsOption
 
-    c.conversion { c.unwrap(parseInt("1")) * 2 }.value shouldBe 2
+    c.conversion { (c unwrap parseInt("1")) * 2 }.value shouldBe 2
 
-    c.conversion { c.unwrap(parseInt("not a number")) * 2 } shouldBe empty
+    c.conversion { (c unwrap parseInt("not a number")) * 2 } shouldBe empty
   }
 
   it should "auto-unwrap results" in {
