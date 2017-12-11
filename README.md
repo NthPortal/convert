@@ -186,8 +186,8 @@ A common method used when parsing is `require` (defined in `Predef`).
 Unfortunately, `Predef.require` always throws an exception when it fails, which
 is not desirable if a caller wants an `Option` back. To solve this, `Convert`
 defines two `require` methods with signatures identical to the signatures of
-those in `Predef`. They can be used as drop-in replacements for latter, but
-MUST be called *inside* of a `conversion` block.
+those in `Predef`. They can be used as drop-in replacements for latter (but
+MUST be called *inside* of a `conversion` block).
 
 For example, let us write a simple method to convert a `List` of two elements
 to a `Tuple2`
@@ -204,3 +204,25 @@ def list2Tuple[A](list: List[A])(implicit c: Convert): c.Result[(A, A)] = {
 ```
 
 #### `wrapException`
+
+Sometimes we may wish to use a conversion function which always throws exceptions,
+because we either cannot or do not want to re-implement it. For example, we
+may not wish to implement integer parsing, but instead use Java's
+`Integer.parseInt`. The can be accomplished easily using `wrapException` (which
+MUST be called *inside* of a `conversion` block) in either of the following ways
+
+```scala
+import com.nthportal.convert.Convert
+
+def parseInt1(s: String)(implicit c: Convert): c.Result[Int] = {
+  c.conversion {
+    c.wrapException[NumberFormatException, Int](Integer.parseInt(s))
+  }
+}
+
+def parseInt2(s: String)(implicit c: Convert): c.Result[Int] = {
+  c.conversion {
+    c.wrapException(_.isInstanceOf[NumberFormatException])(Integer.parseInt(s))
+  }
+}
+```
