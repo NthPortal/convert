@@ -160,8 +160,9 @@ sealed trait Convert {
     * Additionally, because [[unwrap]] MUST be called within a conversion block,
     * this implicit conversion MUST be called within a conversion block as well.
     * However, if imported in the wrong scope, the compiler may insert a call
-    * to this implicit conversion ''outside'' of any conversion block. Use this
-    * implicit conversion with care.
+    * to this implicit conversion ''outside'' of any conversion block.
+    *
+    * Use this implicit conversion with care.
     */
   object AutoUnwrap {
     /** Automatically unwraps the [[Result]] of another conversion.

@@ -205,11 +205,11 @@ def list2Tuple[A](list: List[A])(implicit c: Convert): c.Result[(A, A)] = {
 
 #### `wrapException`
 
-Sometimes we may wish to use a conversion function which always throws exceptions,
-because we either cannot or do not want to re-implement it. For example, we
-may not wish to implement integer parsing, but instead use Java's
-`Integer.parseInt`. The can be accomplished easily using `wrapException` (which
-MUST be called *inside* of a `conversion` block) in either of the following ways
+Sometimes you may wish to use a conversion function which always throws
+exceptions, because you either cannot or do not want to re-implement it. For
+example, you may not wish to implement integer parsing, but instead use Java's
+`Integer.parseInt`. This can be accomplished easily using `wrapException` (which
+MUST be called *inside* of a `conversion` block) in either of the following ways:
 
 ```scala
 import com.nthportal.convert.Convert
@@ -226,3 +226,81 @@ def parseInt2(s: String)(implicit c: Convert): c.Result[Int] = {
   }
 }
 ```
+
+### Synthesizing Conversions
+
+Two functions, one of which throws exceptions, and one of which returns
+`Option`s, can be synthesized into a single conversion function using
+`Convert.synthesize`. For example, suppose the following two methods to parse
+`Boolean`s from `String`s are defined:
+
+```scala
+def parseBooleanThrowing(s: String): Boolean = ???
+def parseBooleanAsOption(s: String): Option[Boolean] = ???
+```
+
+They can be combined into a conversion function with `Convert.synthesize`
+
+```scala
+import com.nthportal.convert.Convert
+
+val booleanParser: Convert.Conversion[String, Boolean] =
+  Convert.synthesize(parseBooleanThrowing, parseBooleanAsOption)
+```
+
+### Automatic Unwrapping (USE WITH CARE)
+
+Sometimes, an excess of calls to `Convert.unwrap` can reduce code readability.
+Readability can be improved by importing `Convert.AutoUnwrap.autoUnwrap` - an
+implicit conversion from `Convert#Result[T]` to `T`. However, use of this
+implicit conversion is not without risks.
+
+**USE THIS IMPLICIT CONVERSION AT YOUR OWN RISK**
+
+This implicit conversion can improve code readability; however, it
+should be used with care. As with all implicit conversions, it may
+be difficult to tell when it is applied by the compiler, leading to
+unexpected behavior which is difficult to debug.
+
+Additionally, because `unwrap` MUST be called within a conversion block,
+this implicit conversion MUST be called within a conversion block as well.
+However, if imported in the wrong scope, the compiler may insert a call
+to this implicit conversion *outside* of any conversion block.
+
+Use this implicit conversion with care.
+
+If you have decided to use automatic unwrapping, its benefits can be seen by
+revisiting the `parseBooleanPair` method from earlier. We originally defined
+the method as
+
+```scala
+import com.nthportal.convert.Convert
+
+def parseBoolean(s: String)(implicit c: Convert): c.Result[Boolean] = ??? // The same as defined above
+
+def parseBooleanPair(s: String)(implicit c: Convert): c.Result[(Boolean, Boolean)] = {
+  c.conversion {
+    s split ',' match {
+      case Array(a, b) => (c.unwrap(parseBoolean(a)), c.unwrap(parseBoolean(b)))
+      case _ => c.fail(new IllegalArgumentException("Not a pair"))
+    }
+  }
+}
+```
+
+Using `AutoUnwrap` allows us to tidy it up a little bit
+
+```scala
+def parseBooleanPair(s: String)(implicit c: Convert): c.Result[(Boolean, Boolean)] = {
+  c.conversion {
+    import c.AutoUnwrap.autoUnwrap
+    s split ',' match {
+      case Array(a, b) => (parseBoolean(a), parseBoolean(b))
+      case _ => c.fail(new IllegalArgumentException("Not a pair"))
+    }
+  }
+}
+```
+
+`AutoUnwrap` makes it more clear that we are just returning a tuple from the
+results of calling `parseBoolean` on the two elements.
