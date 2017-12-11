@@ -150,6 +150,8 @@ class ConvertTest extends FlatSpec with Matchers with OptionValues {
       parseBoolean("false").value shouldBe false
       parseBoolean("not a boolean") shouldBe empty
     }
+
+    a[NullPointerException] should be thrownBy { parseBoolean("true")(null) }
   }
 }
 

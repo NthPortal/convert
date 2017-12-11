@@ -198,6 +198,7 @@ object Convert {
       override def apply(t: T)(implicit c: Convert): c.Result[R] = c match {
         case Throwing => throwing(t).asInstanceOf[c.Result[R]]
         case AsOption => asOption(t).asInstanceOf[c.Result[R]]
+        case null => throw new NullPointerException("null Convert instance")
       }
     }
   }
