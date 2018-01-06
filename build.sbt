@@ -1,9 +1,9 @@
 import sbtcrossproject.{crossProject, CrossType}
 
-scalaVersion := "2.12.3"
-crossScalaVersions := Seq("2.11.11", "2.12.3")
+scalaVersion := "2.12.4"
+crossScalaVersions := Seq("2.11.12", "2.12.4")
 
-val rawVersion = "0.4.0"
+val rawVersion = "0.5.0"
 val sharedSettings = Seq(
   organization := "com.nthportal",
   name := "convert",
@@ -13,7 +13,8 @@ val sharedSettings = Seq(
   isSnapshot := false,
   version := rawVersion + { if (isSnapshot.value) "-SNAPSHOT" else "" },
 
-  scalaVersion := "2.12.3",
+  scalaVersion := "2.12.4",
+  crossScalaVersions := Seq("2.11.12", "2.12.4"),
 
   libraryDependencies ++= Seq(
     "org.scalatest" %%% "scalatest" % "3.0.1+" % Test
@@ -25,8 +26,8 @@ val sharedSettings = Seq(
     if (isSnapshot.value) Seq()
     else scalaVersion.value split '.' map { _.toInt } match {
       case Array(2, 11, _) => Seq("-optimize")
-      case Array(2, 12, patch) if patch <= 2 => Seq("-opt:l:project")
-      case Array(2, 12, patch) if patch > 2 => Seq("-opt:l:inline")
+      case Array(2, 12, minor) if minor <= 2 => Seq("-opt:l:project")
+      case Array(2, 12, minor) if minor > 2 => Seq("-opt:l:inline")
       case _ => Seq()
     }
   },
