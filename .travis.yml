@@ -2,6 +2,7 @@ language: scala
 scala:
   - 2.11.12
   - 2.12.8
+  - 2.13.0-RC3
 jdk:
   - openjdk8
   - openjdk11
@@ -9,6 +10,6 @@ cache:
   directories:
     - $HOME/.ivy2/cache
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION coverage convertJVM/test convertJS/test
+  - sbt ++$TRAVIS_SCALA_VERSION coverage coreJVM/test coreJS/test
 after_success:
-  - sbt ++$TRAVIS_SCALA_VERSION convertJVM/coverageReport convertJS/coverageReport coverageAggregate coveralls
+  - sbt ++$TRAVIS_SCALA_VERSION coreJVM/coverageReport coreJS/coverageReport coverageAggregate coveralls
