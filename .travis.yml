@@ -10,6 +10,6 @@ cache:
   directories:
     - $HOME/.ivy2/cache
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION coverage coreJVM/test coreJS/test
+  - sbt ++$TRAVIS_SCALA_VERSION coverage test
 after_success:
-  - sbt ++$TRAVIS_SCALA_VERSION coreJVM/coverageReport coreJS/coverageReport coverageAggregate coveralls
+  - sbt ++$TRAVIS_SCALA_VERSION coverageReport  coverageAggregate coveralls

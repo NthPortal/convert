@@ -77,7 +77,6 @@ lazy val root = crossProject(JVMPlatform, JSPlatform)
   )
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
-  .withoutSuffixFor(JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
   .settings(sharedSettings, releaseOptimisations)
