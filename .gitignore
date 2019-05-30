@@ -1,17 +1,7 @@
-# Ignore everything by default
-/*
+# IntelliJ
+.idea
 
-# Source files
-!/src
-
-# Project configuration files
-!/project
-project/target
-project/project
-!build.sbt
-
-# Assorted
-!.gitignore
-!LICENSE
-!*.md
-!.travis.yml
+# build output
+target
+.js
+.jvm
